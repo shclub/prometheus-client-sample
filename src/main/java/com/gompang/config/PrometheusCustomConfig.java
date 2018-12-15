@@ -1,8 +1,10 @@
 package com.gompang.config;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import io.prometheus.client.exporter.HTTPServer;
 import io.prometheus.client.hotspot.DefaultExports;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,15 +13,9 @@ import java.io.IOException;
 
 @Configuration
 @Slf4j
-public class PrometheusConfig {
-    @PostConstruct
-    public void init(){
-        DefaultExports.initialize(); // Export JVM Metrics into http endpoint
-    }
-
+public class PrometheusCustomConfig {
     @Bean
-    public HTTPServer prometheusServer() throws IOException {
-        log.info("promethues server has started");
-        return new HTTPServer(9000);
+    MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
+        return registry -> registry.config().commonTags("application", "PROMETHEUS-SAMPLE-SERVER");
     }
 }
